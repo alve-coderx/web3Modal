@@ -39,53 +39,40 @@ function Header() {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
-    const [errorMessage, setErrorMessage] = useState(null);
-    const [accountId, setAccountId] = useState(null);
-    const [balance, setBalance] = useState(null);
+    const [haveMetamask, sethaveMetamask] = useState(true);
+    const [accountAddress, setAccountAddress] = useState('');
+    const [accountBalance, setAccountBalance] = useState('');
+    const [isConnected, setIsConnected] = useState(false);
+    const { ethereum } = window;
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
 
     useEffect(() => {
-        if (window.ethereum) {
-            window.ethereum.on("accountsChanged", accountsChanged);
-            window.ethereum.on("chainChanged", chainChanged);
-        }
+        const { ethereum } = window;
+        const checkMetamaskAvailability = async () => {
+            if (!ethereum) {
+                sethaveMetamask(false);
+            }
+            sethaveMetamask(true);
+        };
+        checkMetamaskAvailability();
     }, []);
 
-    const connectHandler = async () => {
-        if (window.ethereum) {
-            try {
-                const res = await window.ethereum.request({
-                    method: "eth_requestAccounts",
-                });
-                await accountsChanged(res[0]);
-            } catch (err) {
-                console.error(err);
-                setErrorMessage("There was a problem connecting to MetaMask");
+    const connectMeta = async () => {
+        try {
+            if (!ethereum) {
+                sethaveMetamask(false);
             }
-        } else {
-            setErrorMessage("Install MetaMask");
+            const accounts = await ethereum.request({
+                method: 'eth_requestAccounts',
+            });
+            let balance = await provider.getBalance(accounts[0]);
+            let bal = ethers.utils.formatEther(balance);
+            setAccountAddress(accounts[0]);
+            setAccountBalance(bal);
+            setIsConnected(true);
+        } catch (error) {
+            setIsConnected(false);
         }
-    };
-
-    const accountsChanged = async (newAccount) =>  {
-        setAccountId(newAccount);    
-        
-        try {      
-          const balance = await window.ethereum.request({        
-            method: "eth_getBalance",        
-            params: [newAccount.toString(), "latest"],      
-          });      
-          
-          setBalance(ethers.utils.formatEther(balance));    
-        } catch (err) {      
-          console.error(err);      
-          setErrorMessage("There was a problem connecting to MetaMask");      
-        }  
-      };
-
-    const chainChanged = () => {
-        setErrorMessage(null);
-        setAccountId(null);
-        setBalance(null);
     };
 
     let bot = {
@@ -172,7 +159,7 @@ function Header() {
                     aria-describedby="modal-modal-description"
                 >
                     <Box sx={style}>
-                        <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={connectHandler}>Metamask/TrustWallet</button>
+                        <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={connectMeta}>Metamask/TrustWallet</button>
                         <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={() => { connectWallet() }}>WalletConnect</button>
                         <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={handleClose}>Close</button>
                     </Box>
