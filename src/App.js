@@ -17,9 +17,9 @@ function App() {
     <Web3ReactProvider getLibrary={getLibrary}>
       <div className="app">
         <Header />
+        <Route exact path="/" component={Charts} />
         <Route exact path="/Trade" component={Trade} />
         <Route exact path="/Tools" component={Tools} />
-        <Route exact path="/Charts" component={Charts} />
         <Route exact path="/ad" component={ad} />
       </div>
     </Web3ReactProvider>

