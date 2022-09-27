@@ -1,0 +1,10 @@
+.trade{
+    display: block;
+    padding: 5px;
+    justify-items: center;
+    text-align: center;
+    
+}
+.trade iframe{
+    border: black;
+}
