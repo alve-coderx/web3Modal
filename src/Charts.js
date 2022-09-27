@@ -99,8 +99,6 @@ function Charts() {
                     </tr>
                 </table>
             </div>
-            <iframe width="650" height="400" src="https://www.youtube.com/embed/CO30ePKq9wg">
-            </iframe>
         </div>
     )
 }
