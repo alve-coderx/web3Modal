@@ -213,8 +213,6 @@ function Header() {
                 </Box>
 
                 <Box sx={{ flexGrow: 0 }}>
-                    {
-                        typeof(id) !== typeof(condition) ? (
                             <div className="header_right">
 
                                 <Tooltip title='Conncet Wallet'>
@@ -233,10 +231,6 @@ function Header() {
                                     </Box>
                                 </Modal>
                             </div>
-                        )
-                        :
-                        ''
-                    }
                     <Menu
                         sx={{ mt: '45px' }}
                         id="menu-appbar"
