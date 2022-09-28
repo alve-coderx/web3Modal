@@ -3,7 +3,6 @@
     padding: 5px;
     justify-items: center;
     text-align: center;
-
 }
 .main_heading{
     color: white;
@@ -22,11 +21,11 @@
     margin-right: auto;
     margin-top: auto;
     margin-bottom: auto;
-    width: 600px;
+    max-width: 400px;
     height: 150px;
     
 }
-.main_table a{
+.main_table p{
     color: #171717;
     cursor: pointer;
     background-color: #d4d4d4;
