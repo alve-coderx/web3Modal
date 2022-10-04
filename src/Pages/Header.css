@@ -5,7 +5,25 @@
     box-sizing: border-box;
 }
 
+.txtArea {
+    width: 320px;
+     padding: 20px;
+     border: 1px solid gray;
+      height: 100px;
+      outline: none;
+}
+.txtArea1 {
+    width: 356px;
+     border: 1px solid gray;
+     outline: none;
+     padding: 5px;
+     border-radius: 8px;
+}
 
+.hov:hover{
+    background-color: #255cff!important;
+    color:  white;
+}
 .header_left {  
     display: flex;
     margin-left: auto;
