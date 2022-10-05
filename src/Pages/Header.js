@@ -291,7 +291,7 @@ function Header() {
                                     <Box sx={{ mb: 2 }}>
                                         {
                                             loading ?
-                                                <Box sx={{ minWidth: '320px' }}>
+                                                <Box sx={{ minWidth: '320px',minHeight : '450px',display : 'flex',justifyContent : 'center',alignItems : 'center' }}>
                                                     <CircularProgress />
                                                 </Box>
                                                 :
