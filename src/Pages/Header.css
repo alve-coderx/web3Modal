@@ -6,18 +6,18 @@
 }
 
 .txtArea {
-    width: 320px;
+    width: 260px;
      padding: 20px;
      border: 1px solid gray;
       height: 100px;
       outline: none;
 }
 .txtArea1 {
-    width: 356px;
      border: 1px solid gray;
      outline: none;
-     padding: 5px;
+     padding: 20px;
      border-radius: 8px;
+     width: 260px;
 }
 
 .hov:hover{

